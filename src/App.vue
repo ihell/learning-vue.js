@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import InventoryForm from './components/icons/InventoryForm.vue';
-import InventoryList from './components/icons/InventoryList.vue';
+import InventoryForm from './components/InventoryForm.vue';
+import InventoryList from './components/InventoryList.vue';
 
 export default {
   components: {
