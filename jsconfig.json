@@ -1,8 +1,14 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",                   // Mengatur base URL ke root proyek
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["src/*"]                // Menyederhanakan akses ke direktori `src`
+    },
+    "target": "es6",                  // Menentukan versi JavaScript (opsional, tetapi disarankan)
+    "module": "esnext",               // Modul standar untuk proyek Vue (opsional, tetapi berguna)
+    "moduleResolution": "node",       // Menggunakan resolusi modul berbasis node
+    "jsx": "preserve"                 // Untuk proyek Vue yang menggunakan JSX (opsional)
   },
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],            // Memastikan seluruh isi folder `src` disertakan
+  "exclude": ["node_modules", "dist"] // Mengecualikan folder `node_modules` dan `dist`
 }
