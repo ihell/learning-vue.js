@@ -14,7 +14,7 @@
         <tr v-for="item in items" :key="item.id" class="border-b border-gray-200 hover:bg-gray-100">
           <td class="py-3 px-6 text-left">{{ item.nama }}</td>
           <td class="py-3 px-6 text-left">{{ item.stok }}</td>
-          <td class="py-3 px-6 text-left">{{ item.harga }}</td>
+          <td class="py-3 px-6 text-left">{{ formatCurrency(item.harga) }}</td>
           <td class="py-3 px-6 text-center">
             <button @click="editItem(item)" class="bg-blue-500 text-white px-3 py-1 rounded-lg mr-2">Edit</button>
             <button @click="deleteItem(item.id)" class="bg-red-500 text-white px-3 py-1 rounded-lg">Hapus</button>
@@ -43,6 +43,14 @@ export default {
       } catch (error) {
         console.error('Error deleting item:', error);
       }
+    },
+    formatCurrency(value) {
+      // Konversi ke format rupiah
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(value);
     }
   }
 };
