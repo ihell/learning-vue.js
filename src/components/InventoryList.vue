@@ -12,9 +12,9 @@
       </thead>
       <tbody class="text-gray-600 text-sm font-light">
         <tr v-for="item in items" :key="item.id" class="border-b border-gray-200 hover:bg-gray-100">
-          <td class="py-3 px-6 text-left">{{ item.name }}</td>
-          <td class="py-3 px-6 text-left">{{ item.stock }}</td>
-          <td class="py-3 px-6 text-left">{{ item.price }}</td>
+          <td class="py-3 px-6 text-left">{{ item.nama }}</td>
+          <td class="py-3 px-6 text-left">{{ item.stok }}</td>
+          <td class="py-3 px-6 text-left">{{ item.harga }}</td>
           <td class="py-3 px-6 text-center">
             <button @click="editItem(item)" class="bg-blue-500 text-white px-3 py-1 rounded-lg mr-2">Edit</button>
             <button @click="deleteItem(item.id)" class="bg-red-500 text-white px-3 py-1 rounded-lg">Hapus</button>
@@ -26,14 +26,23 @@
 </template>
 
 <script>
+import { db } from '../firebase';
+import { doc, deleteDoc } from 'firebase/firestore';
+
 export default {
   props: ['items'],
   methods: {
     editItem(item) {
       this.$emit('edit-item', item);
     },
-    deleteItem(id) {
-      this.$emit('delete-item', id);
+    async deleteItem(id) {
+      try {
+        // Hapus item dari Firestore
+        await deleteDoc(doc(db, 'inventory', id));
+        this.$emit('delete-item', id); // Emit event untuk menghapus item dari daftar
+      } catch (error) {
+        console.error('Error deleting item:', error);
+      }
     }
   }
 };
