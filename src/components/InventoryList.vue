@@ -27,25 +27,41 @@
 
 <script>
 import { db } from '../firebase';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 
 export default {
-  props: ['items'],
+  data() {
+    return {
+      items: [] // Memuat data inventori
+    };
+  },
+  async mounted() {
+    await this.fetchItems(); // Memanggil data saat komponen dimuat
+  },
   methods: {
+    async fetchItems() {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'inventory'));
+        this.items = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      }
+    },
     editItem(item) {
       this.$emit('edit-item', item);
     },
     async deleteItem(id) {
       try {
-        // Hapus item dari Firestore
         await deleteDoc(doc(db, 'inventory', id));
-        this.$emit('delete-item', id); // Emit event untuk menghapus item dari daftar
+        this.items = this.items.filter(item => item.id !== id); // Memperbarui daftar lokal
       } catch (error) {
         console.error('Error deleting item:', error);
       }
     },
     formatCurrency(value) {
-      // Konversi ke format rupiah
       return new Intl.NumberFormat('id-ID', {
         style: 'currency',
         currency: 'IDR',
