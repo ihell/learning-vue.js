@@ -49,14 +49,14 @@ export default {
   },
   data() {
     return {
-      itemData: { ...this.item }, // Copy item data to avoid direct mutations
+      itemData: { ...this.item }, // Membuat salinan lokal dari data item
     };
   },
   methods: {
     async submitForm() {
       try {
         if (this.isEdit) {
-          // Update existing item
+          // Update data jika sedang dalam mode edit
           const itemRef = doc(db, 'inventory', this.item.id);
           await updateDoc(itemRef, {
             nama: this.itemData.nama,
@@ -64,13 +64,15 @@ export default {
             harga: this.itemData.harga,
           });
         } else {
-          // Add new item
+          // Tambah data baru ke Firestore
           await addDoc(collection(db, 'inventory'), {
             nama: this.itemData.nama,
             stok: this.itemData.stok,
             harga: this.itemData.harga,
           });
         }
+
+        // Emit event untuk memberi tahu parent bahwa data telah berhasil ditambahkan/diperbarui
         this.$emit('submit-item', this.itemData);
       } catch (error) {
         console.error('Error saving item:', error);
@@ -79,7 +81,7 @@ export default {
   },
   watch: {
     item(newItem) {
-      this.itemData = { ...newItem }; // Update local itemData when prop changes
+      this.itemData = { ...newItem }; // Sinkronkan data lokal saat prop berubah
     },
   },
 };

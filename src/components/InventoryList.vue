@@ -27,36 +27,39 @@
 
 <script>
 import { db } from '../firebase';
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import { reactive } from 'vue';
 
 export default {
-  data() {
+  setup() {
+    const items = reactive([]);
+
+    // Listener untuk update real-time dari Firestore
+    const fetchItems = () => {
+      const inventoryRef = collection(db, 'inventory');
+      onSnapshot(inventoryRef, (snapshot) => {
+        items.length = 0; // Reset data lokal
+        snapshot.forEach((doc) => {
+          items.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        });
+      });
+    };
+
+    // Memuat data saat komponen dimuat
+    fetchItems();
+
     return {
-      items: [] // Memuat data inventori
+      items,
+      fetchItems,
     };
   },
-  async mounted() {
-    await this.fetchItems(); // Memanggil data saat komponen dimuat
-  },
   methods: {
-    async fetchItems() {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'inventory'));
-        this.items = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-      } catch (error) {
-        console.error('Error fetching items:', error);
-      }
-    },
-    editItem(item) {
-      this.$emit('edit-item', item);
-    },
     async deleteItem(id) {
       try {
         await deleteDoc(doc(db, 'inventory', id));
-        this.items = this.items.filter(item => item.id !== id); // Memperbarui daftar lokal
       } catch (error) {
         console.error('Error deleting item:', error);
       }
@@ -67,7 +70,10 @@ export default {
         currency: 'IDR',
         minimumFractionDigits: 0,
       }).format(value);
-    }
-  }
+    },
+    editItem(item) {
+      this.$emit('edit-item', item); // Emit event untuk membuka form edit
+    },
+  },
 };
 </script>
