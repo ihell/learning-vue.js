@@ -1,6 +1,12 @@
 <template>
   <div class="p-6 bg-gray-100">
     <h1 class="text-2xl font-bold mb-4">Inventory List</h1>
+
+    <!-- Notifikasi -->
+    <div v-if="notification" class="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+      {{ notification }}
+    </div>
+
     <table class="min-w-full bg-white border border-gray-200 rounded-lg">
       <thead>
         <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
@@ -28,11 +34,12 @@
 <script>
 import { db } from '../firebase';
 import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 
 export default {
   setup() {
-    const items = reactive([]);
+    const items = reactive([]); // Reactive state untuk daftar item
+    const notification = ref(null); // Reactive state untuk notifikasi
 
     // Listener untuk update real-time dari Firestore
     const fetchItems = () => {
@@ -51,19 +58,31 @@ export default {
     // Memuat data saat komponen dimuat
     fetchItems();
 
-    return {
-      items,
-      fetchItems,
+    const showNotification = (message) => {
+      notification.value = message;
+      setTimeout(() => {
+        notification.value = null; // Hilangkan notifikasi setelah 3 detik
+      }, 3000);
     };
-  },
-  methods: {
-    async deleteItem(id) {
+
+    const deleteItem = async (id) => {
       try {
         await deleteDoc(doc(db, 'inventory', id));
+        showNotification('Item berhasil dihapus!');
       } catch (error) {
         console.error('Error deleting item:', error);
       }
-    },
+    };
+
+    return {
+      items,
+      notification,
+      deleteItem,
+      fetchItems,
+      showNotification,
+    };
+  },
+  methods: {
     formatCurrency(value) {
       return new Intl.NumberFormat('id-ID', {
         style: 'currency',

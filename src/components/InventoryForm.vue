@@ -29,6 +29,11 @@
         {{ isEdit ? 'Simpan' : 'Tambah' }}
       </button>
     </form>
+
+    <!-- Notifikasi -->
+    <div v-if="notification" class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+      {{ notification }}
+    </div>
   </div>
 </template>
 
@@ -50,6 +55,7 @@ export default {
   data() {
     return {
       itemData: { ...this.item }, // Membuat salinan lokal dari data item
+      notification: null, // Untuk menampilkan pesan notifikasi
     };
   },
   methods: {
@@ -63,6 +69,7 @@ export default {
             stok: this.itemData.stok,
             harga: this.itemData.harga,
           });
+          this.showNotification('Data berhasil diperbarui!');
         } else {
           // Tambah data baru ke Firestore
           await addDoc(collection(db, 'inventory'), {
@@ -70,6 +77,7 @@ export default {
             stok: this.itemData.stok,
             harga: this.itemData.harga,
           });
+          this.showNotification('Data berhasil ditambahkan!');
         }
 
         // Emit event untuk memberi tahu parent bahwa data telah berhasil ditambahkan/diperbarui
@@ -77,6 +85,12 @@ export default {
       } catch (error) {
         console.error('Error saving item:', error);
       }
+    },
+    showNotification(message) {
+      this.notification = message;
+      setTimeout(() => {
+        this.notification = null; // Hilangkan notifikasi setelah 3 detik
+      }, 3000);
     },
   },
   watch: {
