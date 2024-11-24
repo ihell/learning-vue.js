@@ -1,26 +1,27 @@
-import { createRouter, createWebHistory } from "vue-router";
-import Index from "../views/Index.vue";
-import About from "../views/About.vue";
+import { createRouter, createWebHistory } from 'vue-router';
+import InventoryList from '../components/InventoryList.vue';
+import InventoryForm from '../components/InventoryForm.vue';
+
+const routes = [
+  {
+    path: '/',
+    name: 'InventoryList',
+    component: InventoryList, // Halaman utama
+  },
+  {
+    path: '/form',
+    name: 'InventoryForm',
+    component: InventoryForm, // Halaman form
+    props: (route) => ({
+      isEdit: route.query.isEdit === 'true',
+      item: JSON.parse(route.query.item || '{}'),
+    }),
+  },
+];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: "/",
-      name: "Index",
-      component: Index,
-    },
-    {
-      path: "/about",
-      name: "About",
-      component: About,
-    },
-  ],
-});
-
-router.beforeEach((to, from, next) => {
-  document.title = to.name;
-  next();
+  history: createWebHistory(),
+  routes,
 });
 
 export default router;
