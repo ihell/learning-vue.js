@@ -1,5 +1,14 @@
 <template>
   <div class="p-6 bg-gray-100">
+
+       <!-- Tombol Kembali -->
+       <router-link 
+      to="/" 
+      class="bg-gray-500 text-white px-4 py-2 rounded-lg mb-6 inline-block"
+    >
+      Kembali ke Halaman Utama
+    </router-link>
+
     <div class="bg-white shadow-md rounded-lg p-4 mb-6">
       <h2 class="text-xl font-semibold mb-4">{{ isEdit ? 'Edit Item' : 'Tambah Item Baru' }}</h2>
       <form @submit.prevent="submitForm" class="space-y-4">
